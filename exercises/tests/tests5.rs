@@ -7,13 +7,13 @@
 // the content of the contract cannot be expressed only by a single keyword.
 // Hence, its your responsibility to manually state it in the `# Safety`
 // section of your documentation comment on the item.
-//
+
 // When `unsafe` is marked on a code block enclosed by curly braces,
 // it declares an observance of some contract, such as the validity of some
 // pointer parameter, the ownership of some memory address. However, like
 // the text above, you still need to state how the contract is observed in
 // the comment on the code block.
-//
+
 // NOTE: All the comments are for the readability and the maintainability of
 // your code, while the Rust compiler hands its trust of soundness of your
 // code to yourself! If you cannot prove the memory safety and soundness of
@@ -22,7 +22,6 @@
 // Execute `rustlings hint tests5` or use the `hint` watch subcommand for a
 // hint.
 
-// I AM NOT DONE
 
 /// # Safety
 ///
@@ -32,7 +31,8 @@ unsafe fn modify_by_address(address: usize) {
     // code's behavior and the contract of this function. You may use the
     // comment of the test below as your format reference.
     unsafe {
-        todo!("Your code goes here")
+        let mut value = (address as *mut u32);
+        *value = 0xAABBCCDD;
     }
 }
 

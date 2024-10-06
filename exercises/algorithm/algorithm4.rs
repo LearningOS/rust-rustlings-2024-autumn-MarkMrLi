@@ -3,8 +3,8 @@
 	This problem requires you to implement a basic interface for a binary tree
 */
 
-//I AM NOT DONE
 use std::cmp::Ordering;
+use std::f32::NAN;
 use std::fmt::Debug;
 
 
@@ -51,13 +51,37 @@ where
     // Insert a value into the BST
     fn insert(&mut self, value: T) {
         //TODO
+        match &mut self.root 
+        {
+            Some(root) => root.insert(value),
+            None => {
+                self.root = Some(Box::new(TreeNode::new(value)));
+            }
+        };
+        
     }
 
     // Search for a value in the BST
     fn search(&self, value: T) -> bool {
-        //TODO
-        true
+        let mut node = &self.root; // 使用不可变引用遍历树
+        loop {
+            match node {
+                Some(n) => {
+                    match value.cmp(&n.value) {
+                        Ordering::Equal => break  true,     // 找到值，返回 true
+                        Ordering::Less => {
+                            node = &n.left;  // 去左子树查找
+                        },
+                        Ordering::Greater => {
+                            node = &n.right; // 去右子树查找
+                        },
+                    }
+                },
+                None => break false, // 节点为空，返回 false 表示未找到
+            }
+        }
     }
+    
 }
 
 impl<T> TreeNode<T>
@@ -67,6 +91,27 @@ where
     // Insert a node into the tree
     fn insert(&mut self, value: T) {
         //TODO
+        match value.cmp(&self.value)
+        {
+            Ordering::Less => 
+            {
+                if let Some(left) = &mut self.left {
+                    left.insert(value);
+                } else {
+                    self.left = Some(Box::new(TreeNode::new(value)));
+                }
+            },
+            Ordering::Greater => 
+            {
+                if let Some(right) = &mut self.right{
+                    right.insert(value);
+                } else {
+                    self.right = Some(Box::new(TreeNode::new(value)));
+                }
+            }
+            Ordering::Equal => {}
+        };
+
     }
 }
 

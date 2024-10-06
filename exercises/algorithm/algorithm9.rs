@@ -2,7 +2,6 @@
 	heap
 	This question requires you to implement a binary heap function
 */
-// I AM NOT DONE
 
 use std::cmp::Ord;
 use std::default::Default;
@@ -38,6 +37,16 @@ where
 
     pub fn add(&mut self, value: T) {
         //TODO
+        
+        self.count += 1;
+        println!("heap_len: {}",self.len());
+        let mut now_ind = self.count;
+        self.items.push(value);
+        while (self.comparator)(&self.items[now_ind],&self.items[self.parent_idx(now_ind)]) && now_ind > 1{
+            let pa_ind = self.parent_idx(now_ind);
+            self.items.swap(now_ind, pa_ind);
+            now_ind = pa_ind;
+        }
     }
 
     fn parent_idx(&self, idx: usize) -> usize {
@@ -79,13 +88,59 @@ where
 
 impl<T> Iterator for Heap<T>
 where
-    T: Default,
+    T: Default + Copy,
 {
     type Item = T;
 
-    fn next(&mut self) -> Option<T> {
+    fn next(&mut self) -> Option<T> 
+
+    {
         //TODO
-		None
+        if self.is_empty(){
+            None
+        } else {
+            let ret = Some(self.items[1]);
+            let last_ind = self.len();
+            self.items.swap(last_ind, 1);
+            self.items.pop();
+            self.count -= 1;
+
+            let mut now_ind = 1;
+            loop {
+                if self.children_present(now_ind) {
+                    if self.right_child_idx(now_ind) <= self.count{
+                        let left_ind = self.left_child_idx(now_ind);
+                        let right_ind = self.right_child_idx(now_ind);
+                        let smaller_child_ind = if (self.comparator)(&self.items[left_ind],&self.items[right_ind]) {
+                            left_ind
+                        } else {
+                            right_ind
+                        };
+                        if (self.comparator)(&self.items[smaller_child_ind],&self.items[now_ind]){
+                            self.items.swap(now_ind, smaller_child_ind);
+                            now_ind = smaller_child_ind;
+                        } else {
+                            break;
+                        }
+                    }
+                    else {
+                        let smaller_child_ind = self.left_child_idx(now_ind);
+                        if (self.comparator)(&self.items[smaller_child_ind],&self.items[now_ind]){
+                            self.items.swap(now_ind, smaller_child_ind);
+                            now_ind = smaller_child_ind;
+                            break;
+                        } else {
+                            break;
+                        }
+                    }
+                }
+                else {
+                    break;
+                }
+            }
+            ret
+        }
+		
     }
 }
 
@@ -129,6 +184,7 @@ mod tests {
         heap.add(2);
         heap.add(9);
         heap.add(11);
+        
         assert_eq!(heap.len(), 4);
         assert_eq!(heap.next(), Some(2));
         assert_eq!(heap.next(), Some(4));

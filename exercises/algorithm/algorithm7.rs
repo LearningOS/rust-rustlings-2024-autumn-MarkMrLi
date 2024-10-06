@@ -3,7 +3,6 @@
 	This question requires you to use a stack to achieve a bracket match
 */
 
-// I AM NOT DONE
 #[derive(Debug)]
 struct Stack<T> {
 	size: usize,
@@ -30,9 +29,18 @@ impl<T> Stack<T> {
 		self.data.push(val);
 		self.size += 1;
 	}
-	fn pop(&mut self) -> Option<T> {
+	fn pop(&mut self) -> Option<T> 
+	where
+    T: Copy,
+	{
 		// TODO
-		None
+		if self.size > 0 {
+			self.size -= 1;
+			self.data.pop()
+		}
+		else {
+			None
+		}	
 	}
 	fn peek(&self) -> Option<&T> {
 		if 0 == self.size {
@@ -102,13 +110,59 @@ impl<'a, T> Iterator for IterMut<'a, T> {
 fn bracket_match(bracket: &str) -> bool
 {
 	//TODO
-	true
+	let mut ss = Stack::new();
+	for i in bracket.chars()
+	{
+	
+		match i {
+			'[' | '{' | '(' => ss.push(i),  // 压入左括号
+			')' => {
+				match ss.peek() {
+					Some(c) => {
+						if *c == '(' {
+							ss.pop();
+						} else {
+							return false;
+						}
+					},
+					None => {return false},
+				};
+			},
+			']' => {
+				match ss.peek() {
+					Some(c) => {
+						if *c == '[' {
+							ss.pop();
+						} else {
+							return false;
+						}
+					},
+					None => return false,
+				};
+			},
+			'}' => {
+				match ss.peek() {
+					Some(c) => {
+						if *c == '{' {
+							ss.pop();
+						} else {
+							return false;
+						}
+					},
+					None => return false,
+				};
+			},
+			_ => {continue;}
+		};
+	}
+
+	ss.is_empty()
 }
 
 #[cfg(test)]
 mod tests {
 	use super::*;
-	
+
 	#[test]
 	fn bracket_matching_1(){
 		let s = "(2+3){func}[abc]";
